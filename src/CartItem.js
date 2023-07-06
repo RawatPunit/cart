@@ -1,7 +1,7 @@
 import React from "react";
-import Cart from "./Cart";
 
-class CartItem extends React.Component{
+
+const CartItem= (props) => {
     
     // // ----------------below state has been moved to Cart.js-------------
     // // constructor(){
@@ -43,16 +43,14 @@ class CartItem extends React.Component{
     //     });
     // }
     
-    render(){
-        console.log('this.props',this.props);
-        const { price,title,qty } = this.props.product;  // this will call from the const state-->thus can write dierctlty
+        // console.log('this.props',this.props);
+        const { price,title,qty } = props.product;  // this will call from the const state-->thus can write dierctlty
         // title insted of this.state.title ;  sabko ek hi mei bula diya
-        const {product, onIncreaseQuantity, onDecreaseQuantity,onDelete } = this.props;
+        const {product, onIncreaseQuantity, onDecreaseQuantity, onDeleteProduct } = props;
         return (
             <div className="cart-item">
-                {this.props.jsx}
                 <div className="left-block">
-                    <img style={styles.image}/>
+                    <img style={styles.image} src={product.img}/>
                 </div>
                 <div className="right-block">
                     <div style={ { fontSize : 25 }} >{title}</div>
@@ -65,7 +63,7 @@ class CartItem extends React.Component{
                             className="action-icons" 
                             src="https://cdn-icons-png.flaticon.com/128/3914/3914337.png" 
                             // onClick={this.increaseQuantity}
-                            onClick={() => this.props.onIncreaseQuantity(product)}
+                            onClick={() => onIncreaseQuantity(product)}
                          />
                         <img 
                             alt="decrease" 
@@ -79,14 +77,14 @@ class CartItem extends React.Component{
                             alt="delete" 
                             className="action-icons"
                             src="https://cdn-icons-png.flaticon.com/128/3917/3917439.png"
-                            onClick={() => onDelete(product.id)}
+                            onClick={() => onDeleteProduct(product.id)}
                         />
                     </div>
                 </div>
             </div>
         )
     }
-}
+
 
 //cant use direct css hence used in the form of objects
 const styles ={
