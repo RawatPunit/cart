@@ -5,6 +5,7 @@ import App from './App';
 import * as firebase from 'firebase';
 import 'firebase/firestore'
 
+
 const firebaseConfig = {
   apiKey: "AIzaSyAQdw7o8iLklKkQHt5WQ4W1c-3zVX9czG4",
   authDomain: "cart-5ad35.firebaseapp.com",

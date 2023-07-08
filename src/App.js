@@ -1,37 +1,65 @@
 import React from 'react';
 import Navbar from './Navbar';
 import Cart from './Cart';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
+
 
 class App extends React.Component {
   constructor(){
     super(); //this will call the const of the parent class which is (reactcomponent) othewise error
     this.state= {
-        products:[          //instead of just only phone or watch this will be an array of all prdts.
-            {
-                price : 99,
-                title : 'Watch',
-                qty : 10,
-                img: 'https://staticimg.titan.co.in/Titan/Catalog/1805QM04_1.jpg?impolicy=pqmed&imwidth=640',
-                id: 1
-            },
-            {
-                price : 9999,
-                title : 'Phone',
-                qty : 1,
-                img: 'https://i.gadgets360cdn.com/products/large/redmi-note-12-5g-pro-plus-db-gadgets360-800x600-1673019783.jpg',
-                id :2
-            },
-            {
-                price : 50000,
-                title : 'Laptop',
-                qty : 1,
-                img: 'https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/inspiron-notebooks/15-3535-amd/media-gallery/black/notebook-inspiron-15-3535-nt-plastic-black-gallery-4.psd?fmt=png-alpha&pscan=auto&scl=1&hei=402&wid=642&qlt=100,1&resMode=sharp2&size=642,402&chrss=full',
-                id : 3
-            }
-        ]
+        products:[],          //instead of just only phone or watch this will be an array of all prdts.
+        loading : true
     }
+    this.db = firebase.firestore();
     //this.increseQuamtity = this.increaseQuantity.bind(this)
 }
+
+    // componentDidMount(){
+    //     // firebase
+    //     //     .firestore()
+    //     //     .collection('products')
+    //     //     .get()
+    //     //     .then((snapshot)=>{
+    //     //         console.log(snapshot)
+
+    //     //         snapshot.docs.map((doc)=>{
+    //     //             console.log(doc.data())
+    //     //         });
+
+    //     //         const products = snapshot.docs.map((doc)=>{
+    //     //             const data = doc.data();
+    //     //             data['id'] = doc.id;
+    //     //             return data;
+    //     //         })
+
+    //     //         this.setState({
+    //     //             products,
+    //     //             loading: false
+    //     //         })
+    //     //     })
+    //     }
+        componentDidMount(){
+            this.db
+            .collection('products')
+            .onSnapshot((snapshot)=>{    
+                        const products = snapshot.docs.map((doc)=>{
+                        const data = doc.data();
+                        data["id"] = doc.id;
+                        return data;
+                    })
+        
+                        this.setState({
+                            products: products,
+                            loading: false
+                        })
+                    })
+        }
+        
+
+
 handleIncreaseQuantity = (product) => {
     console.log('Heyy Pls Inc the qty of ', product);
     const {products} = this.state;
@@ -63,7 +91,8 @@ handleDeleteProduct = (id) =>{
     const items = products.filter((item)=> item.id !==id); //{will return an array and this will contains prdts whose id is not equal to id that has been passed}
 
     this.setState({
-        products : items
+        products : items,
+        
     })
 }
 
@@ -92,17 +121,37 @@ getCartTotal = () =>{
     return cartTotal;
 }
 
+addProduct =()=>{
+    this.db
+    .collection('products')
+    .add({
+        img : " ",
+        price : 100,
+        title : "washing Machine",
+        qty :1
+    })
+    .then((docRef)=>{         //docRef will create a document of the above details of product and add it tothe pdtd cllection
+        console.log("product have been added",docRef)
+    })
+    .catch((error)=> {
+        console.log('Error', error);
+    })
+}
+
+
 render(){
-    const {products}  = this.state;
+    const {products,loading}  = this.state;
     return (
       <div className="App"> 
         <Navbar count={this.getCartCount()}/>
+        <button onClick={this.addProduct} style={{padding:20,fontsize:20}}>Add a Product</button>
         <Cart
           products = {products}
           onIncreaseQuantity = {this.handleIncreaseQuantity}
           onDecreaseQuantity = {this.handleDecreaseQuantity}
           onDelete = {this.handleDeleteProduct}
         />
+        {loading && <h1> loading Products...</h1>}
         <div style={{padding:10,fontsize: 20}}> TOTAL:{this.getCartTotal()}</div>
       </div>
     );
